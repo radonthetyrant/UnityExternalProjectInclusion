@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using SyntaxTree.VisualStudio.Unity.Bridge;
@@ -12,14 +13,22 @@ public class SolutionGenerationHook
     {
         ProjectFilesGenerator.SolutionFileGeneration += (name, content) =>
         {
-            string assemblyName = ExternalProjectConfiguration.Instance["assemblyName"];
-            string projectFilePath = ExternalProjectConfiguration.Instance["projectFilePath"];
-            string projectGuid = ExternalProjectConfiguration.Instance["projectGuid"];
+            try
+            {
+                string assemblyName = ExternalProjectConfiguration.Instance["assemblyName"];
+                string projectFilePath = ExternalProjectConfiguration.Instance["projectFilePath"];
+                string projectGuid = ExternalProjectConfiguration.Instance["projectGuid"];
 
-            content = AddProjectToSolution(content, assemblyName, projectFilePath, projectGuid);
+                content = AddProjectToSolution(content, assemblyName, projectFilePath, projectGuid);
 
-            //Debug.Log("SolutionGenerationHook:" + name);
-            return content;
+                //Debug.Log("SolutionGenerationHook:" + name);
+                return content;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            return null;
         };
     }
 

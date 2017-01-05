@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using SyntaxTree.VisualStudio.Unity.Bridge;
 using UnityEngine;
+using System;
 
 [InitializeOnLoad]
 public class ProjectGenerationHook
@@ -13,16 +14,23 @@ public class ProjectGenerationHook
     {
         ProjectFilesGenerator.ProjectFileGeneration += (name, content) =>
         {
-            string assemblyName = ExternalProjectConfiguration.Instance["assemblyName"];
-            string projectFilePath = ExternalProjectConfiguration.Instance["projectFilePath"];
-            string projectGuid = ExternalProjectConfiguration.Instance["projectGuid"];
+            try
+            {
+                string assemblyName = ExternalProjectConfiguration.Instance["assemblyName"];
+                string projectFilePath = ExternalProjectConfiguration.Instance["projectFilePath"];
+                string projectGuid = ExternalProjectConfiguration.Instance["projectGuid"];
 
-            content = RemoveAssemblyReferenceFromProject(content, assemblyName);
-            content = AddProjectReferenceToProject(content, assemblyName, projectFilePath, projectGuid);
-            content = AddCopyAssemblyToAssetsPostBuildEvent(content, assemblyName);
+                content = RemoveAssemblyReferenceFromProject(content, assemblyName);
+                content = AddProjectReferenceToProject(content, assemblyName, projectFilePath, projectGuid);
+                content = AddCopyAssemblyToAssetsPostBuildEvent(content, assemblyName);
 
-            //Debug.Log("ProjectGenerationHook:" + name);
-            return content;
+                //Debug.Log("ProjectGenerationHook:" + name);
+                return content;
+            } catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            return null;
         };
     }
 
