@@ -62,7 +62,7 @@ public class ExternalProjectConfiguration
     {
         get
         {
-            return config[key];
+            return config.ContainsKey(key) ? config[key] : "";
         }
     }
 
