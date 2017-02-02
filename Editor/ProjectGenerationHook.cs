@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -16,6 +16,11 @@ public class ProjectGenerationHook
         {
             try
             {
+                Debug.Log("ProjectGenerationHook:" + name);
+                var regex = new Regex("\\.CSharp\\.Editor\\.csproj", RegexOptions.RightToLeft);
+                if(regex.IsMatch(name))
+                    return content;
+
                 string assemblyName = ExternalProjectConfiguration.Instance["assemblyName"];
                 string projectFilePath = ExternalProjectConfiguration.Instance["projectFilePath"];
                 string projectGuid = ExternalProjectConfiguration.Instance["projectGuid"];
@@ -24,13 +29,12 @@ public class ProjectGenerationHook
                 content = AddProjectReferenceToProject(content, assemblyName, projectFilePath, projectGuid);
                 content = AddCopyAssemblyToAssetsPostBuildEvent(content, assemblyName);
 
-                //Debug.Log("ProjectGenerationHook:" + name);
                 return content;
             } catch (Exception e)
             {
                 Debug.LogException(e);
             }
-            return null;
+            return content;
         };
     }
 
@@ -40,11 +44,16 @@ public class ProjectGenerationHook
             return content; // already added
 
         var signature = new StringBuilder();
-        var dataPath = Application.dataPath.Replace('/', Path.DirectorySeparatorChar);
+
+        string[] pbe = new string[] {
+            string.Format(@"copy /Y ""{0}{1}.*"" ""$(TargetDir)""", ExternalProjectConfiguration.Instance["projectOutputPath"], assemblyName),
+            string.Format(@"copy /Y ""$(TargetDir){0}.*"" ""$(ProjectDir)Assets\""", assemblyName),
+            string.Format(@"""{0}"" ""$(ProjectDir)Assets\{1}.dll""", ExternalProjectConfiguration.Instance["monoConvertExe"], assemblyName)
+        };
 
         signature.AppendLine("  <PropertyGroup>");
         signature.AppendLine("    <RunPostBuildEvent>Always</RunPostBuildEvent>");
-        signature.AppendLine(string.Format(@"    <PostBuildEvent>copy /Y $(TargetDir){0}.dll {1}</PostBuildEvent>", assemblyName, dataPath));
+        signature.AppendLine(string.Format(@"    <PostBuildEvent>{0}</PostBuildEvent>", string.Join("\r\n", pbe)));
         signature.AppendLine("  </PropertyGroup>");
         signature.AppendLine("</Project>");
 
