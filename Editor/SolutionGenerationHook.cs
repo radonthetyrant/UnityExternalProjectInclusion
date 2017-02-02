@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -38,7 +38,7 @@ public class SolutionGenerationHook
             return content; // already added
 
         var signature = new StringBuilder();
-        string csharpProjectTypeGuid = ExternalProjectConfiguration.Instance["ownProjectGuid"];
+        string csharpProjectTypeGuid = ExternalProjectConfiguration.Instance["projectGuid"];
         signature.AppendLine(string.Format("Project(\"{0}\") = \"{1}\", \"{2}\", \"{3}\"", csharpProjectTypeGuid, projectName, projectFilePath, projectGuid));
         signature.AppendLine("Global");
 
