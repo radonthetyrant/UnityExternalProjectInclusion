@@ -1,5 +1,7 @@
 <ExternalProject>
     <assemblyName>ExternalName</assemblyName>
     <projectFilePath>Q:\Path\To\project.csproj</projectFilePath>
+    <projectOutputPath>Q:\path\to\output\dll\files\usually\Projectdir\bin\Debug\</projectOutputPath>
     <projectGuid>{fa8f3167-adc0-4315-af62-9d25329f4e0e}</projectGuid>
+    <monoConvertExe>C:\Program Files (x86)\Mono\lib\mono\4.5\pdb2mdb.exe</monoConvertExe>
 </ExternalProject>
